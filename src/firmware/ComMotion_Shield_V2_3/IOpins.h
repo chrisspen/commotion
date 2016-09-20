@@ -14,3 +14,9 @@
 #define senspin     7    //  A7     (ADC7) - Sensor  on MCU2
 #define irpin      17
 
+// ™©®°±€£¢¥ º¹²³ ¼½¾÷Ω∞≈≠√∑πµΔπ
+
+
+
+
+

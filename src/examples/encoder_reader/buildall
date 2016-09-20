@@ -1,4 +1,5 @@
 #!/bin/bash
 ano clean
 ano build
-#ano upload
+ano upload
+ano serial

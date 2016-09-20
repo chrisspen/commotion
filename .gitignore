@@ -27,3 +27,6 @@
 *.exe
 *.out
 *.app
+/.project
+
+.build_ano

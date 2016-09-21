@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 ano clean
 ano build
 ano upload

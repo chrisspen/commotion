@@ -3,6 +3,7 @@
 #include <Wire.h>
 #include "IOpins.h"
 #include "Notes.h"
+#include "Commands.h"
 
 byte mcu;                                                                     // designation as MCU 1 or MCU 2 as determined by state of pin A2
 byte address;                                                                 // I²C address based on dipswitches and ID pin
@@ -53,20 +54,18 @@ byte sendpack[32];                                                            //
 byte serpack[36];                                                             // serial data pack
 byte syncpack=1;                                                              // sync pack type (default: 1=controller config) 
 byte packsize;                                                                // size of command packet    
-byte command=255;                                                             // 255 = no command 
+byte command = CMD_NULL;                                                      // 255 = no command 
 byte analog;                                                                  // read different analog input each loop (analog conversion takes 260uS)
 byte powerdown=0;                                                             // a value of 1 shuts down all motors to conserve power and prevent a brownout condition
 
 int  voltage;                                                                 // battery voltage
 byte eflag=0;                                                                 // error flag records faults such as over current and under voltage
-byte i2cfreq=1;                                                               // default value for I²C
+byte i2cfreq=0;                                                               // default value for I²C clock: 0=100kHz, 1=400kHz
 
 //============================================================================== Demo global variables ==================================================================================
 
 unsigned long time=millis();
 unsigned long IRtime=millis();
-
-byte loop_count = 0;
 
 void setup()
 {
@@ -94,18 +93,21 @@ void setup()
   Wire.begin(address);                                                        // initialize I²C library and set slave address
   Wire.onReceive(I2C_Receive);                                                // define I²C slave receiver ISR
   Wire.onRequest(I2C_Send);                                                   // define I²C slave transmit ISR
-  Wire.setTimeout(1L);                                                        // sets a timeout of 1mS for I²C
+//  Wire.setTimeout(1L);                                                        // sets a timeout of 1mS for I²C
+  Wire.setTimeout(1000L);                                                        // sets a timeout of 1mS for I²C
   Wire.flush();
   delay(100);                                                                 // required to ensure both processors are initialized before inter-communications begins
-    
-  if(i2cfreq==0)                                                              // thanks to Nick Gammon: http://gammon.com.au/i2c
-  {
-    TWBR=72;                                                                  // default I²C clock is 100kHz
-  }
-  else
-  {
-    TWBR=12;                                                                  // change the I²C clock to 400kHz
-  }
+  
+  //http://playground.arduino.cc/Code/ATMELTWI
+  //TWBR = ((CPUFREQ / 400000L) - 16) / 2; // Set I2C frequency to 400kHz
+  //TWBR = ((CPU_FREQ / 100000L) - 16) / 2; // Set I2C frequency to 100kHz
+  //if(i2cfreq==0)                                                              // thanks to Nick Gammon: http://gammon.com.au/i2c
+  //{
+    //TWBR=72;                                                                  // default I²C clock is 100kHz
+    Wire.setClock(100000L);
+  //}else{
+    //TWBR=12;                                                                  // change the I²C clock to 400kHz
+  //}
   
   //if(mode==1 && mcu==0)                                                       // if demo mode is selected
   //{
@@ -153,9 +155,7 @@ void setup()
 
 
 void loop()
-{ 
-	
-	loop_count += 1;
+{
 	
   //---------------------------------------------------------------------------- Read analog inputs including battery voltage and motor currents ----------------------------------------
   analog++;                                                                   // select a different input each loop (analog read takes 260uS)

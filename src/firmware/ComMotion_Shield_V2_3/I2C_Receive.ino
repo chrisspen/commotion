@@ -23,7 +23,7 @@ void I2C_Receive(int bytes)                                   // received comman
     
   //------------------------------------------------------------ demo syncronization ---------------------------------------------------------
   
-  if(command==15 && packsize==3)
+  if(command==CMD_SET_DEMO && packsize==3)
   {
     EEPROM.write(0,datapack[1]);                              // only update EEPROM if necessary
     EEPROM.write(1,datapack[2]);                              // only update EEPROM if necessary
@@ -31,15 +31,15 @@ void I2C_Receive(int bytes)                                   // received comman
     demo=datapack[1];
     mode=datapack[2];
     
-    command=255;
+    command = CMD_NULL;
     return;
   }
   
-  if(command==7 && packsize==3)  //============================= Demo Modes Angle Update ======================================================
+  if(command==CMD_SET_ANGLE && packsize==3)  //============================= Demo Modes Angle Update ======================================================
   {
     angle=datapack[1]*256+datapack[2];
     Trigonometry();
-    command=255;
+    command = CMD_NULL;
     return;
   }
 }

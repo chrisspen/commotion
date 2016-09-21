@@ -37,7 +37,7 @@ void EEPROMload()                                                   // load conf
   
   master=EEPROM.read(8);                                            // external I²C master address
   addroffset=EEPROM.read(9);                                        // shield I²C address offset
-  i2cfreq=EEPROM.read(10);                                          // I²C clock: 0=100kHz, 1=400kHz
+  //i2cfreq=EEPROM.read(10);                                          // I²C clock: 0=100kHz, 1=400kHz
   
   sermode=EEPROM.read(35);
   baudrate[0]=(EEPROM.read(36)*256U+EEPROM.read(37));

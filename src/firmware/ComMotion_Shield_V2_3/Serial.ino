@@ -4,7 +4,7 @@ void SerialInput()
   if((mcu==0 && (sermode==1 || sermode==3)) || (mcu==1 && (sermode==2 || sermode==4)))  // Command received on serial port
   {
     byte i=0;
-    command=255;
+    command = CMD_NULL;
     while(Serial.available()>0)
     {
       datapack[i]=Serial.read();                                                        // data is read from the serial buffer and added to the command datapack
@@ -42,7 +42,7 @@ void SerialInput()
       packsize=i;
     }
     
-    if(command==255)
+    if(command==CMD_NULL)
     {
       Serial.println("Command not recognized!");
       Serial.print("Command:");Serial.print(datapack[0],DEC);

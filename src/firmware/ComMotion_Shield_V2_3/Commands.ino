@@ -1,26 +1,24 @@
 
 void Commands()
 {
-  if(mcu==0 && (command<5 || command==10))                                   // if this is MCU1 and command is 0-4 then repeat command to MCU2 
+  if(mcu==0 && (command<5 || command==CMD_RESET_EEPROM))                                   // if this is MCU1 and command is 0-4 then repeat command to MCU2 
   {
     Wire.beginTransmission(address+1);                                       // take control of I²C bus and address MCU2
     Wire.write(datapack,packsize);                                           // relay commands to MCU2
     Wire.endTransmission();                                   
   }
   
-  if(command==10) 
+  if(command==CMD_RESET_EEPROM) 
   {
     EEPROMdefaults();
-    command=255;
+    command = CMD_NULL;
     return;
   }
   
   if(command>15) command-=16;                                                // 16 is added (bit 3 set high) for internal commands (no repeat)
   
-  
-  
-  
-  if(command==1 && packsize==10) //============================================ Basic Configuration Data Received =================================================
+  //============================================ Basic Configuration Data Received =================================================
+  if(command==CMD_SET_BASIC_CONFIG && packsize==10)
   {
     mode=datapack[1];
     configuration=datapack[2];
@@ -33,11 +31,12 @@ void Commands()
     master=datapack[9];
     EEPROMsave();                                                            // update EEPROM
     TXconfig();
-    command=255;
+    command = CMD_NULL;
     return;
   }
 
-  if(command==2) //============================================================ Encoder Configuration Data Received =================================================
+  //============================================================ Encoder Configuration Data Received =================================================
+  if(command==CMD_SET_ENCODER_CONFIG) 
   {
     if(packsize==25)                                                         // configure each encoder individually
     {
@@ -66,11 +65,12 @@ void Commands()
     }
     EEPROMsave();                                                            // update EEPROM
     TXconfig();
-    command=255;
+    command = CMD_NULL;
     return;
   }
 
-  if(command==3 && (packsize==7 || packsize==9)) //============================ Motor Control =======================================================================
+  //============================ Motor Control =======================================================================
+  if(command==CMD_SET_MOTOR_CONFIG && (packsize==7 || packsize==9)) 
   {
     if((configuration==3 || configuration==19) && packsize==9)               // Individual motor control  
     {
@@ -102,22 +102,24 @@ void Commands()
       
       Trigonometry();
     }
-    command=255;  
+    command = CMD_NULL;  
     return;
   }
 
-  if(command==4 && packsize==6) //============================================= Serial port configuration ===========================================================
+  //============================================= Serial port configuration ===========================================================
+  if(command==CMD_SET_SERIAL_CONFIG && packsize==6) 
   {
     baudrate[0]=datapack[1]*256U+datapack[2];
     baudrate[1]=datapack[3]*256U+datapack[4];
     sermode=datapack[5];
     Serial.begin(baudrate[mcu]);                                             // change serial port baud rate
     EEPROMsave();                                                            // update EEPROM
-    command=255;
+    command = CMD_NULL;
     return;
   }
 
-  if(command==5 && packsize>2 && packsize<33) //=============================== Send Serial Data =====================================================================
+  //=============================== Send Serial Data =====================================================================
+  if(command==CMD_SEND_SERIAL_DATA && packsize>2 && packsize<33)
   {
     if((mcu+1)==datapack[1])
     {
@@ -127,14 +129,14 @@ void Commands()
       }
       Serial.write(serpack,packsize-2);
     }
-    command=255;
+    command = CMD_NULL;
     return;
   }  
 
-  if(command==6 && packsize==2) //============================================= Status request ======================================================================
+  //============================================= Status request ======================================================================
+  if(command==CMD_GET_STATUS && packsize==2)
   {
                                                                              // each mcu sends it's data seperately to minimize interferance with motor speed control
-                                                                             
     byte spsize=0;                                                           // intitial send pack size = 0
     int request=datapack[1];                                                 // copy datapack to global variable "request" ASAP so datapack can be reused
     
@@ -190,8 +192,6 @@ void Commands()
     Wire.beginTransmission(returnaddress);
     Wire.write(sendpack,spsize);
     Wire.endTransmission();
-    command=255;
+    command = CMD_NULL;
   }
 }
-
-

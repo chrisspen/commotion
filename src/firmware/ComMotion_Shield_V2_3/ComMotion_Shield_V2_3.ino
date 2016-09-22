@@ -10,7 +10,7 @@ byte address;                                                                 //
 
 //============================================================================== Motor Control Variables ================================================================================
 
-int acount,bcount;                                                            // encoder pulse counters used to measure distance
+int acount = 0, bcount = 0;                                                   // encoder pulse counters used to measure distance
 uint16_t acount_abs = 0, bcount_abs = 0;  // encoder pulse counters absolute, don't maintain directionality
 volatile byte aflag;                                                          // flag to indicate encoder A has changed state                                                                
 volatile byte bflag;                                                          // flag to indicate encoder B has changed state

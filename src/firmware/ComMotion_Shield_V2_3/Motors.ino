@@ -106,5 +106,3 @@ void Bencoder()                                                               //
   bflag = 1;                                                                    // set flag for right encoder
   bcount_abs += 1;
 }
-
-

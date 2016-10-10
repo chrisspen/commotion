@@ -26,6 +26,17 @@ the host Arduino as the programmer.
 To do this, you'll first need to flash the host Arduino with sketch to turn it into an ICSP.
 Follow the instructions in "ComMotion Programming Tutorial.pdf".
 
+In general, the procedure is:
+
+1. Attach the ComMotion to an Arduino Uno, and flash the ArduinoISP sketch onto the Arduino Uno.
+2. Short the RST jumper on the ComMotion.
+3. Set the ComMotion's MCU selection switch to the left.
+4. Flash the ComMotion sketch to the ComMotion using File->Upload Using Programmer (not not use the normal Upload button!)
+5. Set the ComMotion's MCU selection switch to the left.
+6. Flash the ComMotion sketch to the ComMotion using File->Upload Using Programmer (not not use the normal Upload button!)
+7. Un-short the RST jumper on the ComMotion and set the MCU selection switch to center.
+8. Flash your custom sketch to the Arduino Uno.
+
 Usage
 -----
 
